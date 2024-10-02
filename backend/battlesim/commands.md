@@ -15,3 +15,4 @@ PORT 3306 MYSQL
 
 
 
+>> .devcontainer >> ctrl shift p >> rebuild container
