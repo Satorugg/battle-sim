@@ -2,12 +2,15 @@ package com.battlesim.api.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.battlesim.api.entity.Player;
 import com.battlesim.api.exception.PlayerNotFoundException;
 import com.battlesim.api.repository.PlayerRepository;
 
 import java.util.List;
 
+import org.springframework.hateoas.EntityModel;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,9 +40,13 @@ public class PlayerController {
     }
     
     @GetMapping("/players/{id}")
-    public Player one(@PathVariable Long id) {
-        return repository.findById(id)
+    public EntityModel<Player> one(@PathVariable Long id) {
+        Player player = repository.findById(id)
             .orElseThrow(() -> new PlayerNotFoundException(id));
+        
+        return EntityModel.of(player, //
+            linkTo(methodOn(PlayerController.class).one(id)).withSelfRel(),
+            linkTo(methodOn(PlayerController.class).all()).withRel("players"));
     }
 
     @PutMapping("/players/{id}")
