@@ -14,8 +14,8 @@ class TestConfig {
   @Bean
   CommandLineRunner initDatabase(PlayerRepository repository) {
     return args -> {
-      repository.save(new Player("Mikey"));
-      repository.save(new Player("Moolie"));
+      repository.save(new Player("Mikey", 1));
+      repository.save(new Player("Moolie", 1));
     };
   }
 }

@@ -12,6 +12,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
+
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +22,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 public class PlayerController {
@@ -41,8 +45,11 @@ public class PlayerController {
     }
 
     @PostMapping("/players")
-    public Player newPlayer(@RequestBody Player newPlayer) {
-        return repository.save(newPlayer);
+    public ResponseEntity<?> newPlayer(@RequestBody Player newPlayer) {
+        EntityModel<Player> entityModel = assembler.toModel(repository.save(newPlayer));
+        return ResponseEntity
+            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+            .body(entityModel);
     }
     
     @GetMapping("/players/{id}")
