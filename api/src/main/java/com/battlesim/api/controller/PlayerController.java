@@ -61,15 +61,23 @@ public class PlayerController {
     }
 
     @PutMapping("/players/{id}")
-    public Player replacePlayer(@RequestBody Player newPlayer, @PathVariable Long id) {
-        return repository.findById(id)
+    public ResponseEntity<?> replacePlayer(@RequestBody Player newPlayer, @PathVariable Long id) {
+        Player updatedPlayer = repository.findById(id) //
             .map(player -> {
                 player.setName(newPlayer.getName());
+                player.setLevel(newPlayer.getLevel());
                 return repository.save(player);
-            })
+            }) //
             .orElseGet(() -> {
                 return repository.save(newPlayer);
             });
+  
+        EntityModel<Player> entityModel = assembler.toModel(updatedPlayer);
+  
+        return ResponseEntity //
+            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+            .body(entityModel);
+
     }
 
     @DeleteMapping("/players/{id}")
